@@ -1,0 +1,17 @@
+File "random_names.txt"
+	Esse file contem nomes aleatoros que serao utilizados na criaçao de novos estudantes
+
+File "make_random_database.py"
+	Leia a descriçao no inicio do file, esse file è exclusivo para a criaçao do database para testes.
+
+Changed file names:
+	students.py -> Students.py
+	subjects.py -> Subjects.py
+
+
+To do antes da parte de input output:
+	ajeitar duas funçoes em "Students.py":
+		"read_students"  	line: 58
+		"read_calouros"		line: 78
+	
+	Mais informaçoes nos comentario do programa
