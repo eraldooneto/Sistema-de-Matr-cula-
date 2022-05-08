@@ -57,7 +57,7 @@ def read_subjects():
                 pre_req = None
 
             schedule = schedule.split('&')
-            subjects.append(Subject(name, p, code, hours, schedule, pre_requisite=pre_req))
+            subjects.append(Subject(name, p, code, int(hours), schedule, pre_requisite=pre_req))
 
     return subjects
 
@@ -98,7 +98,7 @@ def get_subjects_from_semester(semester):
 #           0 -> no conflict
 def check_conficts(subjects):
     for i in range(len(subjects)-1):
-        for j in range(i, len(subjects)):
+        for j in range(i+1, len(subjects)):
             if subjects[i].scheduleConflict(subjects[j]):
                 return 1
     # No conflicts found in schedule

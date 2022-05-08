@@ -1,4 +1,4 @@
-from subjects import *
+from Subjects import *
 
 
 class Student:
@@ -22,7 +22,20 @@ class Student:
     def getComprovant(self):
         return calendar(self.enrolled_classes)
 
-    
+    # Returns all past grades 
+    def getGrades(self):
+        return '\n'.join(str(i[0]) + '\t' + str(i[1]) for i in self.approved_classes)
+
+    # Check if this students has the pre requisites for taking a given subject 
+    def canTakeTheSubject(self, subject):
+        if subject.pre_requisite:
+            history = [i[0] for i in self.approved_classes]
+            for pre in subject.pre_requisite:
+                if not pre in history:
+                    return 0
+        return 1
+
+
     def formatStudentForDatabase(self):
         if self.approved_classes:
             student_history = '&'.join(str(i[0])+','+str(i[1]) for i in self.approved_classes)
@@ -34,8 +47,16 @@ class Student:
 
 
 
+# |-------------------------------| #
+# |         More Functions        | #
+# |-------------------------------| #
+
+
+# !!!!!!!!!!!! # 
+# Need to be replaced with the same function in "make_random_database.py"
+# Right now it will fail at reading the database
 def read_students():
-    with open('students.txt', 'r') as f:
+    with open('students0.1.txt', 'r') as f:
         raw_data = f.read().split('\n')
    
     if raw_data[-1] == '':
@@ -51,6 +72,9 @@ def read_students():
     return students
 
 
+# !!!!!!!!!!!! # 
+# Needs to be modified based as the function make_new_entries in "make_random_database.py"
+# It will use the new logic of random names and sequential registration number
 def read_calouros():
     with open('calouros.txt', 'r') as f:
         raw_data = f.read().split('\n')
@@ -81,9 +105,9 @@ def write_student_to_database(students):
             f.write('\n')
 
 
-students = read_students()
+#students = read_students()
 #students = read_calouros()
 
 #write_student_to_database(students)
 
-print(students[0])
+#print(students[0])
