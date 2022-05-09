@@ -34,6 +34,9 @@ class Subject:
 
 
 
+# |-------------------------------| #
+# |         More Functions        | #
+# |-------------------------------| #
 # Read subjects from file
 def read_subjects():
     with open('subjects.txt', 'r') as f:
@@ -60,6 +63,7 @@ def read_subjects():
             subjects.append(Subject(name, p, code, int(hours), schedule, pre_requisite=pre_req))
 
     return subjects
+
 
 
 # Return Subject object from code
@@ -136,8 +140,5 @@ def full_calendar():
     print('\n'+'_'*88 + '\n' + calendar(get_subjects_from_semester('Eletiva')))
 
 
+
 subjects = read_subjects()
-
-#full_calendar()
-
-

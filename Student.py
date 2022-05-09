@@ -1,15 +1,20 @@
 from Subjects import *
+from random import randint, sample, seed
 
+
+seed(101) # Random seed (RNG)
+NEW_STUDENTS_MIN = 2 # Maximum number of new students
+NEW_STUDENTS_MAX = 4 # Minimum number of new students
 
 class Student:
-    def __init__(self, name, registration, semester, _type, approved):
+    def __init__(self, name, registration, semester, _type, approved, enrolled=[]):
         self.name = name
         self.registration = registration
-        self.enrolled_classes = [] # list of Subject
-        self.approved_classes = approved # list({'subject': grade}
         self.semester = semester
-        self.coefficent = sum([float(i[1]) for i in self.approved_classes]) / len(self.approved_classes) if len(self.approved_classes) else None
         self.type = _type
+        self.approved_classes = approved # list({'subject': grade}
+        self.enrolled_classes = enrolled # list of Subject
+        self.coefficent = sum([float(i[1]) for i in self.approved_classes]) / len(self.approved_classes) if len(self.approved_classes) else None
 
     def __str__(self):
         return 'Name: %s\nSemester: %s\nCoeff: %s'%(self.name, self.semester, self.coefficent)
@@ -47,67 +52,94 @@ class Student:
 
 
 
-# |-------------------------------| #
-# |         More Functions        | #
-# |-------------------------------| #
+
+# |-------------------------------------| #
+# |         Reading and Writing         | #
+# |-------------------------------------| #
+# Read subjects from file
+def read_subjects():
+    with open('subjects.txt', 'r') as f:
+        raw_data = [i.split('\n') for i in f.read().split('\n\n')]
+
+    if raw_data[-1][-1] == '':
+        raw_data[-1] = raw_data[-1][:-1]
+
+    subjects = []
+    for i, s in enumerate(raw_data):
+        if i == len(raw_data) - 1:
+            p = 'Eletiva'
+        else:
+            p = i+1
+        for j in s:
+            try:
+                name, hours, code, schedule, pre_req = j.split('; ')
+                pre_req = pre_req.split('&')
+            except ValueError:
+                name, hours, code, schedule = j.split('; ')
+                pre_req = None
+
+            schedule = schedule.split('&')
+            subjects.append(Subject(name, p, code, int(hours), schedule, pre_requisite=pre_req))
+
+    return subjects
 
 
-# !!!!!!!!!!!! # 
-# Need to be replaced with the same function in "make_random_database.py"
-# Right now it will fail at reading the database
+
+# Read subjects from file
 def read_students():
     with open('students0.1.txt', 'r') as f:
         raw_data = f.read().split('\n')
-   
+
     if raw_data[-1] == '':
         raw_data = raw_data[:-1]
     students = []
     for line in raw_data:
-        name, registration, semester, _type, approved = line.split('; ')
-        approved = [i.split(',') for i in approved.split('&')]
-        if len(approved) >= 32:
-            _type = 'Formando'
-        students.append(Student(name, registration, semester, _type, approved))
+        name, registration, semester, _type, approved, enrolled = line.split('; ')
+        if approved == '':
+            approved = []
+        else:
+            approved = [tuple(i.split(',')) for i in approved.split('&')]
+
+        if enrolled == '':
+            enrolled = []
+        else:
+            enrolled = [subject_from_code(i) for i in enrolled.split('&')]
+
+        students.append(Student(name, registration, int(semester), _type, approved, enrolled))
 
     return students
 
 
-# !!!!!!!!!!!! # 
-# Needs to be modified based as the function make_new_entries in "make_random_database.py"
-# It will use the new logic of random names and sequential registration number
-def read_calouros():
-    with open('calouros.txt', 'r') as f:
-        raw_data = f.read().split('\n')
+# Creates new students for the first semester
+def make_new_students():
+    with open('random_names.txt', 'r') as f:
+        random_names = f.read().split()
+        if random_names[-1] == '':
+            random_names = random_names[:-1]
 
-    if raw_data[-1] == '':
-        raw_data = raw_data[:-1]
-    new_students = []
-    
-    subjects[0].enrolled_sudents = len(raw_data)
-    subjects[1].enrolled_sudents = len(raw_data)
-    subjects[2].enrolled_sudents = len(raw_data)
-    subjects[3].enrolled_sudents = len(raw_data)
-    subjects[4].enrolled_sudents = len(raw_data)
-    
-    for line in raw_data:
-        name, registration = line.split('; ')
-        student = Student(name, registration, 1, 'Calouro', [])
-        student.enrolled_classes = subjects[:5]
-        new_students.append(student)
+    # Registration number (numero de matricula)
+    # if there are no students in the database the first number is 1111
+    # else the number will be the registration of the last student in the database plus 1
+    with open('students0.1.txt', 'r') as f:
+        try:
+            registration_n = int(f.readlines()[-1].split('; ')[1])
+        except IndexError:
+            registration_n = 1111
 
-    return new_students
+    new_entries = sample(random_names, randint(NEW_STUDENTS_MIN, NEW_STUDENTS_MAX))
+
+    students = []
+    for new in new_entries:
+        students.append(Student(new, registration_n, 1, 'Calouro', []))
+        registration_n+=1
+
+    return students
 
 
-def write_student_to_database(students):
+
+def write_students_to_database(students):
     with open('students0.1.txt', 'w') as f:
         for student in students:
             f.write(student.formatStudentForDatabase())
             f.write('\n')
 
-
-#students = read_students()
-#students = read_calouros()
-
-#write_student_to_database(students)
-
-#print(students[0])

@@ -9,9 +9,12 @@ Changed file names:
 	subjects.py -> Subjects.py
 
 
+
+#-----------------------------------------------------------------------#
+#			 	  DONE	   			        #
+#-----------------------------------------------------------------------#
 To do antes da parte de input output:
 	ajeitar duas funçoes em "Students.py":
 		"read_students"  	line: 58
 		"read_calouros"		line: 78
 	
-	Mais informaçoes nos comentario do programa
