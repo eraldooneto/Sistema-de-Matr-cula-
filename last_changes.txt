@@ -1,20 +1,6 @@
-File "random_names.txt"
-	Esse file contem nomes aleatoros que serao utilizados na criaçao de novos estudantes
+Encontrei un bug na leitura do Database dos estudantes, agora esta funcionando direito.
 
-File "make_random_database.py"
-	Leia a descriçao no inicio do file, esse file è exclusivo para a criaçao do database para testes.
-
-Changed file names:
-	students.py -> Students.py
-	subjects.py -> Subjects.py
+Addicionei funçoes para matricular o aluno em uma materia e para remover uma materia da matricula do aluno.
 
 
-
-#-----------------------------------------------------------------------#
-#			 	  DONE	   			        #
-#-----------------------------------------------------------------------#
-To do antes da parte de input output:
-	ajeitar duas funçoes em "Students.py":
-		"read_students"  	line: 58
-		"read_calouros"		line: 78
-	
+no file "test.py" mostra como manipular a matricula do aluno

@@ -10,12 +10,14 @@ s.studentOverview()
 
 # Select a subject
 sub = subject_from_code('CC1923')
+
 s.enroll(sub)
+
+# Display Matricula
+print(s.getComprovant())
+
+# Unenroll
 s.UNenroll(sub)
-
-
 
 # Display Historico
 print(s.getGrades())
-# Display Matricula
-print(s.getComprovant())
