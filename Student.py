@@ -17,28 +17,68 @@ class Student:
         self.coefficent = sum([float(i[1]) for i in self.approved_classes]) / len(self.approved_classes) if len(self.approved_classes) else None
 
     def __str__(self):
-        return 'Name: %s\nSemester: %s\nCoeff: %s'%(self.name, self.semester, self.coefficent)
+        return 'Name: %s\nSemester: %s\nCoeff: %s'%(self.name, self.semester, round(self.coefficent, 1))
         
 
-    def getEnrolledClasses(self):
-        return ', '.join(str(i) for i in self.enrolled_classes)
+    def enroll(self, subject):
+        '''
+        Expects subject to be of type Subject
+        This method doesn't change the subject attributes
+        '''
+        # Check that the students ha prerequisites 
+        if self.canTakeTheSubject(subject):
+            # check that the time of the classes aren't overlapping
+            if not check_conficts(self.enrolled_classes + [subject]):
+                self.enrolled_classes.append(subject)
+
+    
+    def UNenroll(self, subject):
+        '''
+        Expects subject to be of type Subject
+        This method doesn't change the subject attributes
+        '''
+        self.enrolled_classes.remove(subject) 
+
 
     # Returns calendar for enrolled classes
     def getComprovant(self):
-        return calendar(self.enrolled_classes)
+        string = '-'*88 + '\n' + '#'*24 + '\t\tMatricula\t\t' + '#'*24 + '\n' + '-'*88+'\n'
+        if not len(self.enrolled_classes):    
+            string += 'Sem matricula'
+        else:
+            string += calendar(self.enrolled_classes)
+        return string
+        
 
     # Returns all past grades 
     def getGrades(self):
-        return '\n'.join(str(i[0]) + '\t' + str(i[1]) for i in self.approved_classes)
+        string = '-'*88 + '\n' + '#'*24 + '\t\tHistorico\t\t' + '#'*24 + '\n' + '-'*88+'\n'
+        for sub in self.approved_classes:
+            sub_name = subject_from_code(sub[0]).name
+            spaces = 60 - len(sub_name)
+            string += '%s - %s'%(sub[0], sub_name) 
+            string += ' '*spaces + str(sub[1]) + '\n'
+        return string
+
 
     # Check if this students has the pre requisites for taking a given subject 
     def canTakeTheSubject(self, subject):
+        history = [i[0] for i in self.approved_classes]
+        if subject.code in history:
+            return 0    # Student already took the subject
+
         if subject.pre_requisite:
-            history = [i[0] for i in self.approved_classes]
             for pre in subject.pre_requisite:
                 if not pre in history:
-                    return 0
-        return 1
+                    return 0    # Missing prerequisites
+        return 1    # ok
+
+
+    def studentOverview(self):
+        print(self)
+        print(self.getGrades())
+        print(self.getComprovant())
+
 
 
     def formatStudentForDatabase(self):
@@ -56,36 +96,7 @@ class Student:
 # |-------------------------------------| #
 # |         Reading and Writing         | #
 # |-------------------------------------| #
-# Read subjects from file
-def read_subjects():
-    with open('subjects.txt', 'r') as f:
-        raw_data = [i.split('\n') for i in f.read().split('\n\n')]
-
-    if raw_data[-1][-1] == '':
-        raw_data[-1] = raw_data[-1][:-1]
-
-    subjects = []
-    for i, s in enumerate(raw_data):
-        if i == len(raw_data) - 1:
-            p = 'Eletiva'
-        else:
-            p = i+1
-        for j in s:
-            try:
-                name, hours, code, schedule, pre_req = j.split('; ')
-                pre_req = pre_req.split('&')
-            except ValueError:
-                name, hours, code, schedule = j.split('; ')
-                pre_req = None
-
-            schedule = schedule.split('&')
-            subjects.append(Subject(name, p, code, int(hours), schedule, pre_requisite=pre_req))
-
-    return subjects
-
-
-
-# Read subjects from file
+# Read students from file
 def read_students():
     with open('students0.1.txt', 'r') as f:
         raw_data = f.read().split('\n')
@@ -105,7 +116,7 @@ def read_students():
         else:
             enrolled = [subject_from_code(i) for i in enrolled.split('&')]
 
-        students.append(Student(name, registration, int(semester), _type, approved, enrolled))
+        students.append(Student(name, int(registration), int(semester), _type, approved, enrolled))
 
     return students
 
@@ -122,7 +133,9 @@ def make_new_students():
     # else the number will be the registration of the last student in the database plus 1
     with open('students0.1.txt', 'r') as f:
         try:
-            registration_n = int(f.readlines()[-1].split('; ')[1])
+            line = f.readlines()[-1]
+            registration_n = int(line.split('; ')[1])
+            print(registration_n)  
         except IndexError:
             registration_n = 1111
 
@@ -143,3 +156,9 @@ def write_students_to_database(students):
             f.write(student.formatStudentForDatabase())
             f.write('\n')
 
+
+
+def student_from_registration(registration, students):
+    for student in students:
+        if registration == student.registration:
+            return student

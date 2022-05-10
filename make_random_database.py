@@ -83,16 +83,17 @@ def enroll(student):
 
 
 
-students = read_students()
-for i in range(8):
-    new = make_new_students()
 
-    students += new
+if __name__ == '__main__':
+    for i in range(8):
+        students = read_students()
+        new = make_new_students()
 
-    for stud in students:
-        enroll(stud)
-        give_random_grades(stud)
+        students += new
 
+        for stud in students:
+            enroll(stud)
+            give_random_grades(stud)
 
-write_students_to_database(students)
+        write_students_to_database(students)
 
