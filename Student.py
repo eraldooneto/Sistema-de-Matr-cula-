@@ -134,8 +134,7 @@ def make_new_students():
     with open('students0.1.txt', 'r') as f:
         try:
             line = f.readlines()[-1]
-            registration_n = int(line.split('; ')[1])
-            print(registration_n)  
+            registration_n = int(line.split('; ')[1]) + 1
         except IndexError:
             registration_n = 1111
 
